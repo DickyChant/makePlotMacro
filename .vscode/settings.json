@@ -4,6 +4,8 @@
         "tdrstyle.C": "cpp",
         "CMS_lumi.C": "cpp",
         "myMacro.C": "cpp",
-        "plotFunction.C": "cpp"
-    }
+        "plotFunction.C": "cpp",
+        "merge_overflow.C": "cpp"
+    },
+    "C_Cpp.default.includePath": ["/usr/include"]
 }
