@@ -1,0 +1,4 @@
+rootfiles/*
+!rootfiles/.gitkeep
+plots/*
+!plots/.gitkeep

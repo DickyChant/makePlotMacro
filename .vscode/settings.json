@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "test.C": "cpp",
+        "tdrstyle.C": "cpp",
+        "CMS_lumi.C": "cpp",
+        "myMacro.C": "cpp",
+        "plotFunction.C": "cpp"
+    }
+}
