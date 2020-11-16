@@ -11,7 +11,7 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-void test(){
+void plotFunction(const char* funcname){
 
     TH1::SetDefaultSumw2(kFALSE);
 
@@ -70,33 +70,32 @@ void test(){
 
     chain0->Add("rootfiles/1083*root");
 
-    auto hGenJet_pt = new TH1D("hGenJet_pt","hGenJet_pt",30,0,300);
-    auto hGenJet_pt_wow = new TH1D("hGenJet_pt_wow","hGenJet_pt_wow",30,0,300);
+    auto hval = new TH1D(Form("h%s",funcname),Form("h%s",funcname),30,0,300);
+    auto hval_wow = new TH1D(Form("h%s_wow",funcname),Form("h%s_wow",funcname),30,0,300);
     
 
     //chain0->Draw("GenJet_pt","(genWeight/fabs(genWeight))");
 
-    chain0->Project("hGenJet_pt","GenJet_pt","genWeight/fabs(genWeight)");
-    chain0->Project("hGenJet_pt_wow","GenJet_pt");
+    chain0->Project(Form("h%s",funcname),funcname,"genWeight/fabs(genWeight)");
+    chain0->Project(Form("h%s_wow",funcname),funcname);
 
-    cout<<hGenJet_pt->Integral()<<"\t"<<hGenJet_pt->GetEntries()<<endl;
-    hGenJet_pt->Sumw2();
+    hval->Sumw2();
 
-    hGenJet_pt->SetTitle("pT of Jet @ Gen");
-    hGenJet_pt->SetMarkerStyle(20);
-    hGenJet_pt->SetLineColor(kOrange+3);
-    hGenJet_pt->SetFillColorAlpha(9,0.5);
-    hGenJet_pt->Draw("eweight");
+    hval->SetTitle("pT of Jet @ Gen");
+    hval->SetMarkerStyle(20);
+    hval->SetLineColor(kOrange+3);
+    hval->SetFillColorAlpha(9,0.5);
+    hval->Draw("eweight");
     
-    hGenJet_pt_wow->SetMarkerStyle(21);
-    hGenJet_pt_wow->SetLineColor(kBlue+3);
-    hGenJet_pt_wow->SetFillColorAlpha(17,0.5);
-    hGenJet_pt_wow->Draw("weightsame");
+    hval_wow->SetMarkerStyle(21);
+    hval_wow->SetLineColor(kBlue+3);
+    hval_wow->SetFillColorAlpha(17,0.5);
+    hval_wow->Draw("weightsame");
     gPad->SetLogy();
-    hGenJet_pt->GetXaxis()->SetTitle("GeV");
-    hGenJet_pt->GetYaxis()->SetTitle("a.u.");
-    hGenJet_pt->GetYaxis()->SetTitleSize(0.045);
-    hGenJet_pt->GetYaxis()->SetTitleOffset(1);
+    hval->GetXaxis()->SetTitle("GeV");
+    hval->GetYaxis()->SetTitle("a.u.");
+    hval->GetYaxis()->SetTitleSize(0.045);
+    hval->GetYaxis()->SetTitleOffset(1);
 
     float x1_l = 0.92;
     float y1_l = 0.60;
@@ -108,14 +107,14 @@ void test(){
     
     auto legend = new TLegend(x0_l,y0_l,x1_l,y1_l);
 
-    legend->AddEntry(hGenJet_pt,"GenJet_pt with weights");
-    legend->AddEntry(hGenJet_pt_wow,"GenJet_pt w/o weights");
+    legend->AddEntry(hval,Form("%s with weights",funcname));
+    legend->AddEntry(hval_wow,Form("%s w/o weights",funcname));
     legend->Draw();
 
     CMS_lumi(canv,0,33);
     canv->Update();
     canv->RedrawAxis();
     
-    canv->SaveAs("plots/canv.pdf");
+    canv->SaveAs(Form("plots/%s.pdf",funcname));
 
 }
