@@ -5,7 +5,8 @@
         "CMS_lumi.C": "cpp",
         "myMacro.C": "cpp",
         "plotFunction.C": "cpp",
-        "merge_overflow.C": "cpp"
+        "merge_overflow.C": "cpp",
+        "merge_underflow.C": "cpp"
     },
     "C_Cpp.default.includePath": ["/usr/include"]
 }
