@@ -13,9 +13,10 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-void plotFunction(const char* funcname, const char* root_file_path){
+const char* name_template = "%s/HeavyN_SSWW_MuMu_onlyVmuN1_M%d*.root";
+const char* weight_form = "%s/fabs(%s)";
 
-    TH1::SetDefaultSumw2(kFALSE);
+void plotFunction( const char* root_file_path,const char* funcname  = "GenJet_pt",const double lower_edge = 0, const double upper_edge = 1800,const char* weight_name = "genWeight"){
 
     writeExtraText = true;       // if extra text
     extraText  = "Simulation";  // default extra text is "Preliminary"
@@ -62,45 +63,40 @@ void plotFunction(const char* funcname, const char* root_file_path){
 
 
     setTDRStyle();
+    TChain* chains[9];
 
-    auto chain0 = new TChain("Events");
+    int Masses[9] = {1500,1750,2000,2500,5000,7500,10000,15000,20000};
 
-    // for(int i = 0 ; i < 10 ; i++){
-    //     auto tempname = Form("1083743_%d.root",i);
-    //     chain0->AddFile(tempname);
-    // }
+    for (int i = 0 ; i < 9 ; i++){
+        chains[i] = new TChain("Events");
+        chains[i]->Add(Form(name_template,root_file_path,Masses[i])) ;
+    }
 
-    chain0->Add(Form("%s/*root",root_file_path));
+	TH1D* hvals[9];
 
-    auto hval = new TH1D(Form("h%s",funcname),Form("h%s",funcname),30,0,300);
-    auto hval_wow = new TH1D(Form("h%s_wow",funcname),Form("h%s_wow",funcname),30,0,300);
+	for(int i= 0 ; i < 9 ; i++){
+		const char* name_tmp = Form("h%s_M%d",funcname,Masses[i]);
+		hvals[i] = new TH1D(name_tmp,name_tmp,100,lower_edge,upper_edge);
+		chains[i]->Project(name_tmp,funcname,Form(weight_form,weight_name));
+		cout<<hvals[i]->Integral()<<endl;
+		// merge_overflow(hvals[i]);
+		// merge_underflow(hvals[i]);
+		//
+		hvals[i]->SetTitle(Form("M%d",Masses[i]));
+		hvals[i]->SetMarkerStyle(20);
+		hvals[i]->SetLineColor(kOrange+3 - i);
+		//hvals[i]->SetFillColorAlpha(kBlue+3 - i,0.5);
+		hvals[i]->Draw("histsame");		
+	}	
     
+	gPad->SetLogy();
+	hvals[0]->GetXaxis()->SetTitle("GeV");
+    hvals[0]->GetYaxis()->SetTitle("a.u.");
+    hvals[0]->GetYaxis()->SetTitleSize(0.045);
+    hvals[0]->GetYaxis()->SetTitleOffset(1);
 
-    //chain0->Draw("GenJet_pt","(genWeight/fabs(genWeight))");
-
-    chain0->Project(Form("h%s",funcname),funcname,"genWeight/fabs(genWeight)");
-    chain0->Project(Form("h%s_wow",funcname),funcname);
-
-    hval->Sumw2();
-
-    hval->SetTitle("pT of Jet @ Gen");
-    hval->SetMarkerStyle(20);
-    hval->SetLineColor(kOrange+3);
-    hval->SetFillColorAlpha(9,0.5);
-    hval->Draw("eweight");
-    
-    hval_wow->SetMarkerStyle(21);
-    hval_wow->SetLineColor(kBlue+3);
-    hval_wow->SetFillColorAlpha(17,0.5);
-    hval_wow->Draw("weightsame");
-    gPad->SetLogy();
-    hval->GetXaxis()->SetTitle("GeV");
-    hval->GetYaxis()->SetTitle("a.u.");
-    hval->GetYaxis()->SetTitleSize(0.045);
-    hval->GetYaxis()->SetTitleOffset(1);
-
-    float x1_l = 0.92;
-    float y1_l = 0.60;
+    float x1_l = 0.65;
+    float y1_l = 0.90;
 
     float dx_l = 0.30;
     float dy_l = 0.18;
@@ -109,9 +105,11 @@ void plotFunction(const char* funcname, const char* root_file_path){
     
     auto legend = new TLegend(x0_l,y0_l,x1_l,y1_l);
 
-    legend->AddEntry(hval,Form("%s with weights",funcname));
-    legend->AddEntry(hval_wow,Form("%s w/o weights",funcname));
-    legend->Draw();
+    
+	for(int i= 0 ; i < 9 ; i++){
+		legend->AddEntry(hvals[i],Form("M%d",Masses[i]));
+	}	
+	legend->Draw();
 
     CMS_lumi(canv,0,33);
     canv->Update();
