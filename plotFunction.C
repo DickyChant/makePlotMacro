@@ -13,10 +13,9 @@ using std::cout;
 using std::cin;
 using std::endl;
 
-void plotFunction(const char* funcname, const char* root_file_path){
+const char* weight_form = "%s/fabs(%s)";
 
-    TH1::SetDefaultSumw2(kFALSE);
-
+void plotFunction(const char* root_file_path, const char* funcname="GenJet_pt",const double lower_edge = 0,const double upper_edge = 300 ; const char* weight_name = "Gen_Weight"){
     writeExtraText = true;       // if extra text
     extraText  = "Simulation";  // default extra text is "Preliminary"
     lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
@@ -72,16 +71,16 @@ void plotFunction(const char* funcname, const char* root_file_path){
 
     chain0->Add(Form("%s/*root",root_file_path));
 
-    auto hval = new TH1D(Form("h%s",funcname),Form("h%s",funcname),30,0,300);
-    auto hval_wow = new TH1D(Form("h%s_wow",funcname),Form("h%s_wow",funcname),30,0,300);
+    auto hval = new TH1D(Form("h%s",funcname),Form("h%s",funcname),30,lower_edge,upper_edge);
+    auto hval_wow = new TH1D(Form("h%s_wow",funcname),Form("h%s_wow",funcname),30,lower_edge,upper_edge);
     
 
     //chain0->Draw("GenJet_pt","(genWeight/fabs(genWeight))");
+	//
 
-    chain0->Project(Form("h%s",funcname),funcname,"genWeight/fabs(genWeight)");
+    chain0->Project(Form("h%s",funcname),funcname,Form(weight_form,weight_name));
     chain0->Project(Form("h%s_wow",funcname),funcname);
 
-    hval->Sumw2();
 
     hval->SetTitle("pT of Jet @ Gen");
     hval->SetMarkerStyle(20);
