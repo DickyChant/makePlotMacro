@@ -15,7 +15,7 @@ using std::endl;
 
 const char* weight_form = "%s/fabs(%s)";
 
-void plotFunction(const char* root_file_path, const char* funcname="GenJet_pt",const double lower_edge = 0,const double upper_edge = 300 ; const char* weight_name = "Gen_Weight"){
+void plotFunction(const char* root_file_path, const char* funcname="GenJet_pt",const double lower_edge = 0,const double upper_edge = 300 ; const char* weight_name = "genWeight"){
     writeExtraText = true;       // if extra text
     extraText  = "Simulation";  // default extra text is "Preliminary"
     lumi_8TeV  = "19.1 fb^{-1}"; // default is "19.7 fb^{-1}"
