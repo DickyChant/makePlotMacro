@@ -1,6 +1,30 @@
 #include "TTree.h"
+#include <fstream>
+
+using std::ifstream;
 
 const char* name_template = "%s/HeavyN_SSWW_MuMu_onlyVmuN1_M%d*.root";
+
+string SetRules(const char* selrule_path = "SelectionRules.dat"){
+    ifstream infile(selrule_path);
+
+    const char* empty = "";
+
+    char* readin;
+    char* tmp = nullptr;
+    
+    while(!infile.eof()){
+        infile>>readin;
+        if(tmp!=nullptr) {
+            tmp = Form("(%s)&&(%s)",tmp,readin);
+        }
+        else{
+            tmp = Form("(%s)",readin);
+        }
+    }
+
+    return tmp;
+}
 
 void DirectlyDraw( const char* root_file_path,const char* funcname  = "GenJet_pt"){
 
@@ -15,10 +39,12 @@ void DirectlyDraw( const char* root_file_path,const char* funcname  = "GenJet_pt
     }
 
     chains[0]->Draw(funcname);
+
+    auto SelRules = SetRules();
     
     for (int i = 1 ; i < 9 ;i ++){
         
-        chains[i]->Draw(funcname,"","same");
+        chains[i]->Draw(funcname,SelRules.c_str(),"same");
         
     }
 

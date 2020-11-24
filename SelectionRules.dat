@@ -1,0 +1,4 @@
+GenJet_pt>25 
+fabs(GenJet_eta)<4.5 
+GenDressedLepton_pt>10 
+fabs(GenDressedLepton_eta)<2.7
